@@ -5,11 +5,22 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"sync"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
 var _ = net.Listen
 var _ = os.Exit
+
+type DB struct {
+	memory map[string]string
+	sync.Mutex
+}
+
+var db = DB{
+	memory: make(map[string]string),
+	Mutex:  sync.Mutex{},
+}
 
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
