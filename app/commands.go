@@ -1,6 +1,10 @@
 package main
 
-import "net"
+import (
+	"fmt"
+	"net"
+	"strings"
+)
 
 const (
 	PING = "PING"
@@ -8,12 +12,14 @@ const (
 )
 
 func processCommand(command []string, conn net.Conn) {
-	cmd := command[0]
+	cmd := strings.ToUpper(command[0])
 	args := command[1:]
 	switch cmd {
 	case PING:
 		conn.Write([]byte("+PONG\r\n"))
 	case ECHO:
-		conn.Write([]byte(args[0]))
+		length := len(args[0])
+		val := args[0]
+		conn.Write([]byte(fmt.Sprintf("$%d\r\n%s\r\n", length, val)))
 	}
 }
