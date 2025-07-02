@@ -34,14 +34,14 @@ func main() {
 func processConn(conn net.Conn) {
 	reader := bufio.NewReader(conn)
 	buf := make([]byte, 1024)
-	_, err := reader.Read(buf)
-	if err != nil {
-		fmt.Println(fmt.Sprintf("Error reading from connection: %s", err.Error()))
-		os.Exit(1)
-	}
-	s := strings.Split(string(buf), " ")
-	for i := range s {
-		if s[i] == "PING" {
+	for {
+		_, err := reader.Read(buf)
+		if err != nil {
+			fmt.Println(fmt.Sprintf("Error reading from connection: %s", err.Error()))
+			os.Exit(1)
+		}
+		s := strings.Split(string(buf), " ")
+		for _ = range s {
 			conn.Write([]byte("+PONG\r\n"))
 		}
 	}
