@@ -33,6 +33,6 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println("Read from connection, bytes: ", n)
-	fmt.Println("buffer: ", buf)
+	fmt.Println("buffer: ", string(buf))
 	_, _ = conn.Write([]byte("+PONG\r\n"))
 }
