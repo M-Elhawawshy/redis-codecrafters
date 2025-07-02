@@ -44,6 +44,5 @@ func processConn(conn net.Conn) {
 		for _ = range s {
 			conn.Write([]byte("+PONG\r\n"))
 		}
-		//useless comment
 	}
 }
