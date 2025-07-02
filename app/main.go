@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strings"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
@@ -37,10 +36,12 @@ func processConn(conn net.Conn) {
 	for {
 		_, err := reader.Read(buf)
 		if err == nil {
-			s := strings.Split(string(buf), " ")
-			for _ = range s {
-				conn.Write([]byte("+PONG\r\n"))
+			command, err := parseRESP(string(buf))
+			if err != nil {
+				fmt.Println("Error parsing command: ", err.Error())
+				os.Exit(1)
 			}
+			processCommand(command, conn)
 		}
 	}
 }
