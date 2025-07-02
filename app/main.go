@@ -36,13 +36,11 @@ func processConn(conn net.Conn) {
 	buf := make([]byte, 1024)
 	for {
 		_, err := reader.Read(buf)
-		if err != nil {
-			fmt.Println(fmt.Sprintf("Error reading from connection: %s", err.Error()))
-			os.Exit(1)
-		}
-		s := strings.Split(string(buf), " ")
-		for _ = range s {
-			conn.Write([]byte("+PONG\r\n"))
+		if err == nil {
+			s := strings.Split(string(buf), " ")
+			for _ = range s {
+				conn.Write([]byte("+PONG\r\n"))
+			}
 		}
 	}
 }
