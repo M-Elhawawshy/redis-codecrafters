@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"sync"
+	"time"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
@@ -13,12 +14,17 @@ var _ = net.Listen
 var _ = os.Exit
 
 type DB struct {
-	memory map[string]string
+	memory map[string]ValueWithExpiry
 	sync.Mutex
 }
 
+type ValueWithExpiry struct {
+	Value     string
+	ExpiresAt time.Time
+}
+
 var db = DB{
-	memory: make(map[string]string),
+	memory: make(map[string]ValueWithExpiry),
 	Mutex:  sync.Mutex{},
 }
 
