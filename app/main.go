@@ -49,7 +49,7 @@ func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
 	fmt.Println("Logs from your program will appear here!")
 	dir := flag.StringP("dir", "d", "", "specify the dir of persistent DB")
-	dbfilename := flag.StringP("dbfilename", "rdb", "", "specify the dir of persistent DB")
+	dbfilename := flag.StringP("dbfilename", "", "", "specify the dir of persistent DB")
 	flag.Parse()
 	app.config.Lock()
 	app.config.settings["dir"] = *dir
