@@ -78,8 +78,10 @@ func processCommand(command []string, conn net.Conn) {
 		}
 	case KEYS:
 		// check if there's a db file in settings if so get it and work from there
+		app.config.RLock()
 		dir := app.config.settings["dir"]
 		filename := app.config.settings["dbfilename"]
+		app.config.RUnlock()
 		if dir != "" && filename != "" {
 			file, err := os.Open(fmt.Sprintf("%s/%s", dir, filename))
 			if err != nil {

@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"os"
 )
 
 func readLength(r *bufio.Reader) (int, error) {
@@ -37,4 +38,31 @@ func readString(r *bufio.Reader) (string, error) {
 	buf := make([]byte, length)
 	_, err = io.ReadFull(r, buf)
 	return string(buf), err
+}
+
+func loadRDBToMemory() {
+	app.config.RLock()
+	dir := app.config.settings["dir"]
+	filename := app.config.settings["dbfilename"]
+	app.config.RUnlock()
+	if dir != "" && filename != "" {
+		file, err := os.Open(fmt.Sprintf("%s/%s", dir, filename))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer file.Close()
+		reader := bufio.NewReader(file)
+		mp, err := parseDatabaseRDB(reader)
+		if err != nil {
+			fmt.Println("failed to parse db: ", err)
+			return
+		}
+
+		app.db.Lock()
+		for k, v := range mp {
+			app.db.memory[k] = v
+		}
+		app.db.Unlock()
+	}
 }
