@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -15,6 +17,7 @@ const (
 	GET    = "GET"
 	PX     = "PX"
 	CONFIG = "CONFIG"
+	KEYS   = "KEYS"
 )
 
 func processCommand(command []string, conn net.Conn) {
@@ -73,5 +76,35 @@ func processCommand(command []string, conn net.Conn) {
 			resp := fmt.Sprintf("*2\r\n$%d\r\n%s\r\n$%d\r\n%s\r\n", lenKey, key, lenVal, val)
 			conn.Write([]byte(resp))
 		}
+	case KEYS:
+		// check if there's a db file in settings if so get it and work from there
+		dir := app.config.settings["dir"]
+		filename := app.config.settings["dbfilename"]
+		if dir != "" && filename != "" {
+			file, err := os.Open(fmt.Sprintf("%s/%s", dir, filename))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			defer file.Close()
+			reader := bufio.NewReader(file)
+			mp, err := parseDatabaseRDB(reader)
+			if err != nil {
+				fmt.Println("failed to parse db: ", err)
+				return
+			}
+			var keys []string
+			for k, _ := range mp {
+				keys = append(keys, k)
+			}
+			resp := "*" + strconv.Itoa(len(keys)) + "\r\n"
+			for _, k := range keys {
+				resp += "$" + strconv.Itoa(len(k)) + "\r\n" + k + "\r\n"
+			}
+			conn.Write([]byte(resp))
+			return
+		}
+		// print a null value resp
+		conn.Write([]byte("$-1\r\n"))
 	}
 }
