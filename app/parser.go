@@ -71,7 +71,7 @@ func parseDatabaseRDB(reader *bufio.Reader) (map[string]ValueWithExpiry, error) 
 		fmt.Println(err)
 		return nil, err
 	}
-	hashTable, err := readLength(reader)
+	hashTable, err := reader.ReadByte()
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
